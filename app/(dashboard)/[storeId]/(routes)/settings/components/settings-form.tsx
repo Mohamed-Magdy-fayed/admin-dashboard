@@ -145,13 +145,13 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
                     <Select
                       disabled={loading}
                       onValueChange={field.onChange}
-                      value={field.value || ""}
-                      defaultValue={field.value || ""}
+                      value={field.value || undefined}
+                      defaultValue={field.value || undefined}
                     >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue
-                            defaultValue={field.value || ""}
+                            defaultValue={field.value || undefined}
                             placeholder="Select the main billboard"
                           />
                         </SelectTrigger>
