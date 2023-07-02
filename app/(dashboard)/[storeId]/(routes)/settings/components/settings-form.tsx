@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { Trash } from "lucide-react";
-import { Store } from "@prisma/client";
+import { Billboard, Store } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -25,18 +25,30 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { ApiAlert } from "@/components/ui/api-alert";
 import { useOrigin } from "@/hooks/use-origin";
 import Heading from "@/components/ui/Heading";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(2),
+  activeBillboard: z.string().min(1).nullable(),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
 
 interface SettingsFormProps {
   initialData: Store;
+  billboards: Billboard[];
 }
 
-export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
+export const SettingsForm: React.FC<SettingsFormProps> = ({
+  initialData,
+  billboards,
+}) => {
   const params = useParams();
   const router = useRouter();
   const origin = useOrigin();
@@ -123,6 +135,40 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {billboards.length > 0 && (
+              <FormField
+                control={form.control}
+                name="activeBillboard"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Main Billboard</FormLabel>
+                    <Select
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      value={field.value || ""}
+                      defaultValue={field.value || ""}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            defaultValue={field.value || ""}
+                            placeholder="Select the main billboard"
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {billboards.map((billboard) => (
+                          <SelectItem key={billboard.id} value={billboard.id}>
+                            {billboard.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
           <Button disabled={loading} className="ml-auto" type="submit">
             Save changes
